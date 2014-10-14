@@ -20,4 +20,8 @@ if __name__ == "__main__":
     else:
         query = Query.parse(args.file)
 
-    print(query.name)
+    if not query:
+        print("Could not parse the query")
+        sys.exit(1)
+
+    print(query)
