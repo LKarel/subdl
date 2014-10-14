@@ -5,7 +5,7 @@ if __name__ == "__main__":
     query = None
 
     if len(sys.argv) < 2:
-        print("Missing name")
+        print("Missing name argument")
         sys.exit(1)
 
     if False:
