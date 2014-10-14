@@ -1,10 +1,17 @@
+import argparse
 import sys
 from query import Query
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", help="Name or file to search")
+    parser.add_argument("-c", "--count", type=int, default=1, help="Maximum number of files to download")
+    parser.add_argument("-l", "--lang", help="Language of the subtitles")
+
+    args = parser.parse_args()
     query = None
 
-    if len(sys.argv) < 2:
+    if "file" not in args:
         print("Missing name argument")
         sys.exit(1)
 
@@ -12,6 +19,6 @@ if __name__ == "__main__":
         # If query is file, extract the query info from there
         pass
     else:
-        query = Query.parse(sys.argv[1])
+        query = Query.parse(args.file)
 
     print(query.name)
