@@ -27,7 +27,7 @@ class Query:
         pointer = None
         kws = []
 
-        for kw in KEYWORDS:
+        for kw in Query.KEYWORDS:
             if name.lower().find(kw) != -1:
                 kws.append(kw)
 
