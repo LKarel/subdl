@@ -4,6 +4,10 @@ from subtitle_source import SubtitleSource
 
 class subclub(SubtitleSource):
     def find(self, query, count=1, lang=None):
+        if lang != "et":
+            # Subclub has only Estonian subtitles
+            return []
+
         search = query.name
 
         if query.pointer:
