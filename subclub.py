@@ -39,8 +39,8 @@ class SubClub(SubtitleSource):
                 for dl_link in soup_new.find_all("a"):
                     dl_url = dl_link.get("href")
                     ret.append(SubtitleResult("http://subclub.eu" + dl_url[2:], 1.0))
-                
+
                     if len(ret) == count:
                         return ret
-            
+
         return ret
