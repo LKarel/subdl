@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
-import http.client, urllib.parse
+import urllib.parse
 from subtitle_result import SubtitleResult
 from subtitle_source import SubtitleSource
+import util
 
 class SubClub(SubtitleSource):
     def _get_subid(self, url):
@@ -11,17 +12,6 @@ class SubClub(SubtitleSource):
                 subid += ch
 
         return subid
-
-    # TODO: Selle funktsiooni jaoks eraldi Class
-    def _connect(self, url):
-        conn = http.client.HTTPConnection("subclub.eu")
-        conn.request("GET", url)
-        response = conn.getresponse()
-        
-        soup = BeautifulSoup(response.read())
-        conn.close()
-
-        return soup
 
     def find(self, query, count=1, lang=None):
         if lang != "et":
@@ -35,7 +25,7 @@ class SubClub(SubtitleSource):
 
         params = urllib.parse.urlencode({"otsing": search,})
 
-        soup = self._connect("/jutud.php?" + params)
+        soup = util.connect("subclub.eu", "/jutud.php?" + params)
 
         ret = []
 
@@ -44,7 +34,7 @@ class SubClub(SubtitleSource):
             if "down.php" in url:
                 subid = self._get_subid(url)
 
-                soup_new = self._connect("/subtitles_archivecontent.php?id=" + subid)
+                soup_new = util.connect("subclub.eu", "/subtitles_archivecontent.php?id=" + subid)
 
                 for dl_link in soup_new.find_all("a"):
                     dl_url = dl_link.get("href")
