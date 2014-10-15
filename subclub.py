@@ -3,7 +3,7 @@ import http.client, urllib.parse
 from subtitle_result import SubtitleResult
 from subtitle_source import SubtitleSource
 
-class subclub(SubtitleSource):
+class SubClub(SubtitleSource):
     def find(self, query, count=1, lang=None):
         if lang != "et":
             # Subclub has only Estonian subtitles
