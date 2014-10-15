@@ -11,15 +11,15 @@ class Pointer:
     def parse(raw):
         regex = None
 
-        if raw[0] == "S":
-            regex = r"^S(?P<season>\d{2})E(?P<episode>\d{2})"
+        if raw[0] == "s":
+            regex = r"^s(?P<season>\d{2})e(?P<episode>\d{2})"
         elif raw.lower().find("x") != -1:
-            regex = r"^(?P<season>\d+)[xX](?P<episode>\d+)"
+            regex = r"^(?P<season>\d+)x(?P<episode>\d+)"
 
         if not regex:
             return
 
-        result = re.match(regex, raw)
+        result = re.match(regex, raw.lower())
 
         if result:
             return Pointer(int(result.group("season")), int(result.group("episode")))

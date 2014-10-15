@@ -19,6 +19,8 @@ class Query:
         return ret
 
     def parse(raw, is_file=False):
+        raw = raw.lower()
+
         if is_file:
             raw = os.path.splitext(raw)[0]
 
