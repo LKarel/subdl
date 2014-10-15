@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import http.client, urllib.parse
+from subtitle_result import SubtitleResult
 from subtitle_source import SubtitleSource
 
 class subclub(SubtitleSource):
@@ -20,10 +21,14 @@ class subclub(SubtitleSource):
         response = connect.getresponse()
 
         soup = BeautifulSoup(response.read())
+        ret = []
 
         for link in soup.find_all("a"):
             url = link.get("href")
             if "down.php" in url:
-                return 'subclub.eu%s' % url[2:]
+                ret.append(SubtitleResult("http://subclub.eu" + url[2:], 1.0))
 
-        return None
+                if len(ret) == count:
+                    break
+
+        return ret
