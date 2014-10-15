@@ -1,12 +1,13 @@
+import os
 import re
 from pointer import Pointer
 
 class Query:
     KEYWORDS = ["yifi", "publichd", "norar"]
 
-    def __init__(self, name, pointer=None):
+    def __init__(self, name):
         self.name = name
-        self.pointer = pointer
+        self.pointer = None
         self.keywords = []
 
     def __str__(self):
@@ -17,21 +18,31 @@ class Query:
 
         return ret
 
-    def parse(raw):
-        result = re.match(r'^(?P<name>.+)(?P<pointer>S\d{2}E\d{2}|\d+x\d+)?', raw)
+    def parse(raw, is_file=False):
+        if is_file:
+            raw = os.path.splitext(raw)[0]
 
-        if not result.group("name"):
-            return
+        pointer_str = Pointer.read_str(raw)
 
-        name = result.group("name").replace(".", " ").strip()
+        name = raw
         pointer = None
         kws = []
 
+        if pointer_str:
+            pointer = Pointer.parse(pointer_str)
+            name = name.replace(pointer_str, "")
+
         for kw in Query.KEYWORDS:
-            if name.lower().find(kw) != -1:
+            if raw.lower().find(kw) != -1:
                 kws.append(kw)
 
-        if result.group("pointer"):
-            pointer = Pointer.parse(result.group("pointer"))
+        # TODO: Specifically handle names in known format
+        name = re.sub(r"[.-]", " ", name)
+        name = re.sub(r"\s+", " ", name)
+        name = name.strip()
 
-        return Query(name, pointer=pointer)
+        query = Query(name)
+        query.pointer = pointer
+        query.keywords = kws
+
+        return query

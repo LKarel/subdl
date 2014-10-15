@@ -23,3 +23,8 @@ class Pointer:
 
         if result:
             return Pointer(int(result.group("season")), int(result.group("episode")))
+
+    def read_str(data):
+        result = re.match(r".*(?P<pointer>s\d+e\d+|\d+x\d+).*", data.lower())
+        if result:
+            return result.group("pointer")

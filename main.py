@@ -1,5 +1,6 @@
 import argparse
 import locale
+import os
 import sys
 from query import Query
 
@@ -12,13 +13,14 @@ if __name__ == "__main__":
     parser.add_argument("-l", "--lang", default=default_lang, help="Language of the subtitles")
 
     args = parser.parse_args()
-    query = None
 
-    if False:
-        # If query is file, extract the query info from there
-        pass
-    else:
-        query = Query.parse(args.file)
+    name = args.file
+    is_file = os.path.isfile(name)
+
+    if is_file:
+        name = os.path.basename(name)
+
+    query = Query.parse(name, is_file=is_file)
 
     if not query:
         print("Could not parse the query")
