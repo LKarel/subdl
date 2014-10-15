@@ -4,6 +4,25 @@ from subtitle_result import SubtitleResult
 from subtitle_source import SubtitleSource
 
 class SubClub(SubtitleSource):
+    def _get_subid(self, url):
+        subid = ''
+        for ch in url:
+            if ch.isdigit():
+                subid += ch
+
+        return subid
+
+    # TODO: Selle funktsiooni jaoks eraldi Class
+    def _connect(self, url):
+        conn = http.client.HTTPConnection("subclub.eu")
+        conn.request("GET", url)
+        response = conn.getresponse()
+        
+        soup = BeautifulSoup(response.read())
+        conn.close()
+
+        return soup
+
     def find(self, query, count=1, lang=None):
         if lang != "et":
             # Subclub has only Estonian subtitles
@@ -16,19 +35,22 @@ class SubClub(SubtitleSource):
 
         params = urllib.parse.urlencode({"otsing": search,})
 
-        connect = http.client.HTTPConnection("subclub.eu")
-        connect.request("GET", "/jutud.php?" + params)
-        response = connect.getresponse()
+        soup = self._connect("/jutud.php?" + params)
 
-        soup = BeautifulSoup(response.read())
         ret = []
 
         for link in soup.find_all("a"):
             url = link.get("href")
             if "down.php" in url:
-                ret.append(SubtitleResult("http://subclub.eu" + url[2:], 1.0))
+                subid = self._get_subid(url)
 
-                if len(ret) == count:
-                    break
+                soup_new = self._connect("/subtitles_archivecontent.php?id=" + subid)
 
+                for dl_link in soup_new.find_all("a"):
+                    dl_url = dl_link.get("href")
+                    ret.append(SubtitleResult("http://subclub.eu" + dl_url[2:], 1.0))
+                
+                    if len(ret) == count:
+                        return ret
+            
         return ret
