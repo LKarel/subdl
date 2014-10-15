@@ -8,7 +8,7 @@ if __name__ == "__main__":
     default_lang = locale.getdefaultlocale()[0][:2]
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", required=True, help="Name or file to search")
+    parser.add_argument("file", help="Name or file to search")
     parser.add_argument("-c", "--count", type=int, default=1, help="Maximum number of files to download")
     parser.add_argument("-l", "--lang", default=default_lang, help="Language of the subtitles")
 
