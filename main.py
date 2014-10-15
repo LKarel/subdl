@@ -2,6 +2,8 @@ import argparse
 import locale
 import os
 import sys
+from subclub import SubClub
+from subscene import SubScene
 from query import Query
 
 if __name__ == "__main__":
@@ -25,5 +27,13 @@ if __name__ == "__main__":
     if not query:
         print("Could not parse the query")
         sys.exit(1)
+
+    subscene = SubScene()
+    subscene_match = subscene.find(query, 2, 'et')
+
+    print(subscene_match)
+
+    #for subs in subclub_match:
+    #    print("\n" + subs.download_url)
 
     print(query)
