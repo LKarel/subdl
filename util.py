@@ -10,3 +10,10 @@ def connect(host, url):
     conn.close()
 
     return soup
+
+def contains_any(needles, haystack):
+    for needle in needles:
+        if needle in haystack:
+            return True
+
+    return False

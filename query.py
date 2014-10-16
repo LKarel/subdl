@@ -1,9 +1,10 @@
 import os
 import re
+import util
 from pointer import Pointer
 
 class Query:
-    KEYWORDS = ["yifi", "publichd", "norar"]
+    GARBAGE = ["720p", "1080p", "hdtv", "x264"]
 
     def __init__(self, name):
         self.name = name
@@ -22,29 +23,28 @@ class Query:
         raw = raw.lower()
 
         if is_file:
+            # Remove the extension
             raw = os.path.splitext(raw)[0]
 
         pointer_str = Pointer.read_str(raw)
-
         name = raw
-        pointer = None
-        kws = []
 
-        if pointer_str:
-            pointer = Pointer.parse(pointer_str)
+        if is_file and util.contains_any(["dimension", "killers", "remarkable", "2hd"], raw):
+            if pointer_str:
+                name = name.split(pointer_str)[0]
+        elif pointer_str:
             name = name.replace(pointer_str, "")
 
-        for kw in Query.KEYWORDS:
-            if raw.lower().find(kw) != -1:
-                kws.append(kw)
+        for item in Query.GARBAGE:
+            name = name.replace(item, "")
 
-        # TODO: Specifically handle names in known format
         name = re.sub(r"[.-]", " ", name)
         name = re.sub(r"\s+", " ", name)
         name = name.strip()
 
         query = Query(name)
-        query.pointer = pointer
-        query.keywords = kws
+
+        if pointer_str:
+            query.pointer = Pointer.parse(pointer_str)
 
         return query
