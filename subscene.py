@@ -18,35 +18,53 @@ class SubScene(SubtitleSource):
         search = query.name
 
         if query.pointer:
-            search += str(query.pointer)
+            search += " %s" % str(query.pointer)
 
         params = urllib.parse.urlencode({"q": search,})
 
-        soup = util.connect("subscene.com", "/subtitles/title?" + params)
-
         sub_links = []
 
-        if "Search results" == soup.h1.string.strip():
+        if not query.pointer:
+            soup = util.connect("subscene.com", "/subtitles/title?" + params)
+
             for link in soup.find_all("a"):
-                if link.string:
-                    if query.name in link.string.lower():
-                        subs_list = link.get("href")
+                if not link.string:
+                    continue
 
-                        soup_new = util.connect("subscene.com", subs_list)
+                if query.name not in link.string.lower():
+                    continue
 
-                        for sub in soup_new.find_all("a"):
-                            if lang in sub.get("href"):
-                                if sub.get("href") not in sub_links:
-                                    sub_links.append(sub.get("href"))
+                subs_list = link.get("href")
+                soup_new = util.connect("subscene.com", subs_list)
 
-                            if len(sub_links) == count:
-                                break
+                for sub in soup_new.find_all("a"):
+                    if lang not in sub.get("href"):
+                        continue
+
+                    if sub.get("href") not in sub_links:
+                        sub_links.append(sub.get("href"))
+
+                    if len(sub_links) == count:
+                        break
 
                 if len(sub_links) == count:
                     break
-
         else:
-            print("auch")
+            soup = util.connect("subscene.com", "/subtitles/release?" + params)
+
+            for sub in soup.find_all("a"):
+                if lang not in sub.get("href"):
+                    continue
+
+                for span in sub.find_all("span"):
+                    if str(query.pointer).upper() not in span.string.upper():
+                        continue
+
+                    if sub.get("href") not in sub_links:
+                        sub_links.append(sub.get("href"))
+
+                    if len(sub_links) == count:
+                        break
 
         print(sub_links)
 
