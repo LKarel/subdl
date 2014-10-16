@@ -5,85 +5,77 @@ from subtitle_source import SubtitleSource
 import util
 
 class SubScene(SubtitleSource):
-    def __convertLang(self, lang):
+    def _convert_lang(self, lang):
         langs = {'et': 'estonian', 'en': 'english'}
         if lang in langs:
             return langs[lang]
         else:
             return 'english'
 
+    def _find_movie_by_name(self, query, soup):
+        sub_links = []
+
+        for link in soup.find_all("a"):
+            if not link.string:
+                continue
+
+            if query.name not in link.string.lower():
+                continue
+
+            return link.get("href")
+
     def find(self, query, count=1, lang=None):
-        lang = self.__convertLang(lang)
+        lang = self._convert_lang(lang)
 
-        search = query.name
+        if not query.filename:
+            search = query.name
 
-        if query.pointer:
-            search += " %s" % str(query.pointer)
+            if query.pointer:
+                search += " %s" % str(query.pointer)
+        else:
+            search = query.filename
 
         params = urllib.parse.urlencode({"q": search,})
 
+        if not query.pointer and not query.filename:
+            soup = util.connect("subscene.com", "/subtitles/title?" + params)
+            sub_links_page = self._find_movie_by_name(query, soup)
+        else:
+            sub_links_page = "/subtitles/release?" + params
+
+        soup = util.connect("subscene.com", sub_links_page)
+
         sub_links = []
 
-        if not query.pointer:
-            soup = util.connect("subscene.com", "/subtitles/title?" + params)
+        for sub in soup.find_all("a"):
+            if lang not in sub.get("href"):
+                continue
 
-            for link in soup.find_all("a"):
-                if not link.string:
-                    continue
-
-                if query.name not in link.string.lower():
-                    continue
-
-                subs_list = link.get("href")
-                soup_new = util.connect("subscene.com", subs_list)
-
-                for sub in soup_new.find_all("a"):
-                    if lang not in sub.get("href"):
-                        continue
-
-                    if sub.get("href") not in sub_links:
-                        sub_links.append(sub.get("href"))
-
-                    if len(sub_links) == count:
-                        break
+            for span in sub.find_all("span"):
+                if sub.get("href") not in sub_links:
+                    sub_links.append(sub.get("href"))
 
                 if len(sub_links) == count:
                     break
-        else:
-            soup = util.connect("subscene.com", "/subtitles/release?" + params)
 
-            for sub in soup.find_all("a"):
-                if lang not in sub.get("href"):
-                    continue
-
-                for span in sub.find_all("span"):
-                    if str(query.pointer).upper() not in span.string.upper():
-                        continue
-
-                    if sub.get("href") not in sub_links:
-                        sub_links.append(sub.get("href"))
-
-                    if len(sub_links) == count:
-                        break
-
-        print(sub_links)
-
-        return 0
+            if len(sub_links) == count:
+                break
 
         ret = []
 
-        for link in soup.find_all("a"):
-            url = link.get("href")
-            if query.name in url:
-                subid = self._get_subid(url)
+        for link in sub_links:
+            soup = util.connect("subscene.com", link)
+            dl_button = soup.find(id="downloadButton")
+            dl_link = dl_button.get("href")
 
-                soup_new = util.connect("http://subscene.com/", "/subtitles_archivecontent.php?id=" + subid)
+            rating = ''
+            rating_title = soup.find("span", class_="rating-bar")
 
-                for dl_link in soup_new.find_all("a"):
-                    dl_url = dl_link.get("href")
-                    ret.append(SubtitleResult("http://subclub.eu" + dl_url[2:], 1.0))
-                
-                    if len(ret) == count:
-                        return ret
-            
+            for ch in rating_title['title']:
+                if ch.isdigit():
+                    rating += ch
+
+            rating = (int(rating) / 10) * 0.75
+            ret.append(SubtitleResult(dl_link, rating))
+
         return ret
