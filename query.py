@@ -8,6 +8,7 @@ class Query:
 
     def __init__(self, name):
         self.name = name
+        self.filename = None
         self.pointer = None
         self.keywords = []
 
@@ -46,5 +47,8 @@ class Query:
 
         if pointer_str:
             query.pointer = Pointer.parse(pointer_str)
+
+        if is_file:
+            query.filename = raw
 
         return query
