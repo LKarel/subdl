@@ -76,6 +76,6 @@ class SubScene(SubtitleSource):
                     rating += ch
 
             rating = (int(rating) / 10) * 0.75
-            ret.append(SubtitleResult(dl_link, rating))
+            ret.append(SubtitleResult("http://subscene.com" + dl_link, rating))
 
         return ret
