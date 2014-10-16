@@ -37,8 +37,9 @@ class SubClub(SubtitleSource):
                 soup_new = util.connect("subclub.eu", "/subtitles_archivecontent.php?id=" + subid)
 
                 for dl_link in soup_new.find_all("a"):
-                    dl_url = dl_link.get("href")
-                    ret.append(SubtitleResult("http://subclub.eu" + dl_url[2:], 1.0))
+                    result = SubtitleResult("http://subclub.eu" + dl_link.get("href")[2:], 1.0)
+                    result.target_name = dl_link.text.strip()
+                    ret.append(result)
 
                     if len(ret) == count:
                         return ret
