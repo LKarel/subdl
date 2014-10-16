@@ -76,6 +76,9 @@ class SubScene(SubtitleSource):
                     rating += ch
 
             rating = (int(rating) / 10) * 0.75
-            ret.append(SubtitleResult("http://subscene.com" + dl_link, rating))
+            result = SubtitleResult("http://subscene.com" + dl_link, rating)
+            result.zipped = True
+
+            ret.append(result)
 
         return ret
