@@ -37,6 +37,4 @@ class Query:
         if pointer_str:
             query.pointer = Pointer.parse(pointer_str)
 
-        print(query.name, query.pointer)
-
         return query
