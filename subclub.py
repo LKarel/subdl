@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 import urllib.parse
 from subtitle_result import SubtitleResult
@@ -6,12 +7,10 @@ import util
 
 class SubClub(SubtitleSource):
     def _get_subid(self, url):
-        subid = ''
-        for ch in url:
-            if ch.isdigit():
-                subid += ch
+        match = re.match(r".*[?&]id=(?P<id>\d+)", url)
 
-        return subid
+        if match:
+            return match.group("id")
 
     def find(self, query, count=1, lang=None):
         if lang != "et":
@@ -33,6 +32,9 @@ class SubClub(SubtitleSource):
             url = link.get("href")
             if "down.php" in url:
                 subid = self._get_subid(url)
+
+                if not subid:
+                    continue
 
                 soup_new = util.connect("subclub.eu", "/subtitles_archivecontent.php?id=" + subid)
 
