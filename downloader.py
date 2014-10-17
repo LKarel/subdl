@@ -1,6 +1,7 @@
 import http
 import os
-import zlib
+import zipfile
+import tempfile
 import util
 from subtitle_file import SubtitleFile
 
@@ -19,12 +20,25 @@ class Downloader:
 
         for result in results:
             extension = os.path.splitext(result.download_url)[1]
+            target_name = result.get_target_name()
             body = util.download_bytes(result.download_url)
 
             if not body:
                 continue
 
-            files.append(SubtitleFile(result.get_target_name(), body))
+            if result.zipped:
+                tmp = tempfile.TemporaryFile()
+                tmp.write(body)
+                z = zipfile.ZipFile(tmp)
+
+                names = z.namelist()
+                if len(names) == 0:
+                    continue
+
+                body = z.read(names[0])
+                target_name = names[0]
+
+            files.append(SubtitleFile(target_name, body))
 
             if len(files) == count:
                 break

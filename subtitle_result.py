@@ -5,6 +5,7 @@ class SubtitleResult:
         self.score = score
         self.download_url = url
         self.target_name = None
+        self.zipped = True
 
     def get_target_name(self):
         if self.target_name:

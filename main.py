@@ -4,6 +4,7 @@ import os
 import sys
 from downloader import Downloader
 from query import Query
+from subscene import SubScene
 from subclub import SubClub
 
 if __name__ == "__main__":
@@ -33,7 +34,8 @@ if __name__ == "__main__":
     print("Searching for matches...", end="", flush=True)
 
     dl = Downloader([
-        SubClub()
+        SubClub(),
+        SubScene()
     ])
     results = dl.get(query, args.count, args.lang)
 
