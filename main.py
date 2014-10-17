@@ -19,13 +19,11 @@ if __name__ == "__main__":
 
     name = args.file
     root = os.getcwd()
-    is_file = os.path.isfile(name)
 
-    if is_file:
-        root = os.path.abspath(os.path.dirname(name))
-        name = os.path.basename(name)
+    if os.path.isfile(name):
+        root = os.path.dirname(name)
 
-    query = Query.parse(name, is_file=is_file)
+    query = Query.parse(os.path.basename(args.file))
 
     if not query:
         print("Could not parse the query")

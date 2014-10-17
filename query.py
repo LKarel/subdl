@@ -4,13 +4,10 @@ import util
 from pointer import Pointer
 
 class Query:
-    GARBAGE = ["720p", "1080p", "hdtv", "x264", "bluray", "yify"]
-
     def __init__(self, name):
         self.name = name
         self.filename = None
         self.pointer = None
-        self.keywords = []
 
     def __str__(self):
         ret = self.name
@@ -20,35 +17,26 @@ class Query:
 
         return ret
 
-    def parse(raw, is_file=False):
-        raw = raw.lower()
+    def parse(filename):
+        filename = filename.lower()
+        filename = os.path.splitext(filename)[0]
 
-        if is_file:
-            # Remove the extension
-            raw = os.path.splitext(raw)[0]
+        name = filename
+        pointer_str = Pointer.read_str(filename)
 
-        pointer_str = Pointer.read_str(raw)
-        name = raw
-
-        if is_file and util.contains_any(["dimension", "killers", "remarkable", "2hd"], raw):
-            if pointer_str:
-                name = name.split(pointer_str)[0]
-        elif pointer_str:
-            name = name.replace(pointer_str, "")
-
-        for item in Query.GARBAGE:
-            name = name.replace(item, "")
+        if pointer_str:
+            name = filename.split(pointer_str)[0]
 
         name = re.sub(r"[.-]", " ", name)
         name = re.sub(r"\s+", " ", name)
         name = name.strip()
 
         query = Query(name)
+        query.filename = filename
 
         if pointer_str:
             query.pointer = Pointer.parse(pointer_str)
 
-        if is_file:
-            query.filename = raw
+        print(query.name, query.pointer)
 
         return query
