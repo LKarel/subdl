@@ -4,7 +4,7 @@ import util
 from pointer import Pointer
 
 class Query:
-    GARBAGE = ["720p", "1080p", "hdtv", "x264"]
+    GARBAGE = ["720p", "1080p", "hdtv", "x264", "bluray", "yify"]
 
     def __init__(self, name):
         self.name = name
