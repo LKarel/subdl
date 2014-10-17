@@ -35,7 +35,7 @@ class SubScene(SubtitleSource):
         else:
             search = query.filename
 
-        params = urllib.parse.urlencode({"q": search,})
+        params = urllib.parse.urlencode({"q": search})
 
         if not query.pointer and not query.filename:
             soup = util.connect("subscene.com", "/subtitles/title?" + params)
