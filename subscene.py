@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from difflib import SequenceMatcher
 import http.client, urllib.parse
 from query import Query
 from subtitle_result import SubtitleResult
@@ -47,7 +48,6 @@ class SubScene(SubtitleSource):
         soup = util.connect("subscene.com", sub_links_page)
 
         sub_links = []
-
         for sub in soup.find_all("a"):
             if lang not in sub.get("href"):
                 continue
@@ -58,20 +58,19 @@ class SubScene(SubtitleSource):
             if str(link_pointer) != str(query.pointer):
                 continue
 
-            for span in sub.find_all("span"):
-                if sub.get("href") not in sub_links:
-                    sub_links.append(sub.get("href"))
+            if sub.get("href") not in sub_links:
+                sub_links.append({
+                    "filename": link_name + ".srt",
+                    "url": sub.get("href"),
+                    "score": SequenceMatcher(None, query.filename, link_name).ratio()
+                })
 
-                if len(sub_links) == count:
-                    break
-
-            if len(sub_links) == count:
-                break
-
+        sub_links = sorted(sub_links, key=lambda v: v["score"], reverse=True)
         ret = []
+        i = 0
 
-        for link in sub_links:
-            soup = util.connect("subscene.com", link)
+        for item in sub_links:
+            soup = util.connect("subscene.com", item["url"])
             dl_button = soup.find(id="downloadButton")
             dl_link = dl_button.get("href")
 
@@ -79,16 +78,20 @@ class SubScene(SubtitleSource):
             rating_title = soup.find("span", class_="rating-bar")
 
             if rating_title: 
-                for ch in rating_title['title']:
+                for ch in rating_title["title"]:
                     if ch.isdigit():
                         rating += ch
             else:
-                rating = 4
+                rating = 0
 
-            rating = (int(rating) / 10) * 0.75
-            result = SubtitleResult("http://subscene.com" + dl_link, rating)
+            score = (int(rating) / 10) * 0.15 + 0.6 * item["score"]
+            result = SubtitleResult("http://subscene.com" + dl_link, score)
+            result.target_name = item["filename"]
             result.zipped = True
 
             ret.append(result)
+            i += 1
+            if i == 10:
+                break
 
         return ret
