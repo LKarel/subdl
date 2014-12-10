@@ -1,5 +1,6 @@
 import re
 from bs4 import BeautifulSoup
+from difflib import SequenceMatcher
 import urllib.parse
 from subtitle_result import SubtitleResult
 from subtitle_source import SubtitleSource
@@ -43,12 +44,13 @@ class SubClub(SubtitleSource):
 
                 soup_new = util.connect("subclub.eu", "/subtitles_archivecontent.php?id=" + subid)
 
-                for dl_link in soup_new.find_all("a"):
-                    result = SubtitleResult("http://subclub.eu" + dl_link.get("href")[2:], 1.0)
-                    result.target_name = dl_link.text.strip()
-                    ret.append(result)
+                for anchor in soup_new.find_all("a"):
+                    dl = "http://subclub.eu%s" % anchor.get("href")[2:]
+                    filename = anchor.text.strip()
+                    score = 0.4 + 0.6 * SequenceMatcher(None, query.filename, filename).ratio()
 
-                    if len(ret) == count:
-                        return ret
+                    result = SubtitleResult(dl, score)
+                    result.target_name = filename
+                    ret.append(result)
 
         return ret
