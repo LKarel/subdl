@@ -13,7 +13,7 @@ class SubClub(SubtitleSource):
         if match:
             return match.group("id")
 
-    def find(self, query, count=1, lang=None):
+    def find(self, query, lang=None):
         if lang != "et":
             # Subclub has only Estonian subtitles
             return []

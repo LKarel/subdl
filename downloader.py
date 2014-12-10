@@ -14,7 +14,7 @@ class Downloader:
         results = []
 
         for source in self.sources:
-            results += source.find(query, count, lang)
+            results += source.find(query, lang=lang)
 
         results = sorted(results, key=lambda v: v.score, reverse=True)
 

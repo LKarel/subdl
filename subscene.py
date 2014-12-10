@@ -25,7 +25,7 @@ class SubScene(SubtitleSource):
 
             return link.get("href")
 
-    def find(self, query, count=1, lang=None):
+    def find(self, query, lang=None):
         lang = self._convert_lang(lang)
 
         if not query.filename:
