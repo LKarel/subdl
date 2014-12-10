@@ -17,13 +17,18 @@ class SubClub(SubtitleSource):
             # Subclub has only Estonian subtitles
             return []
 
-        search = query.name
+        params = {
+            "otsing": query.name,
+            "tp": "nimi"
+        }
 
-        if query.pointer:
-            search += " %sx%s" % (query.pointer.season, query.pointer.episode)
+        if query.imdb:
+            params["otsing"] = str(query.imdb)
+            params["tp"] = "kood"
+        elif query.pointer:
+            params["otsing"] += " %sx%s" % (query.pointer.season, query.pointer.episode)
 
-        params = urllib.parse.urlencode({"otsing": search,})
-
+        params = urllib.parse.urlencode(params)
         soup = util.connect("subclub.eu", "/jutud.php?" + params)
 
         ret = []
