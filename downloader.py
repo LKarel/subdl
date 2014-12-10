@@ -43,7 +43,4 @@ class Downloader:
             if len(files) == count:
                 break
 
-        if len(files) >= count:
-            return files[:count]
-
         return files
