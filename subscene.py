@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import http.client, urllib.parse
+from query import Query
 from subtitle_result import SubtitleResult
 from subtitle_source import SubtitleSource
 import util
@@ -51,6 +52,12 @@ class SubScene(SubtitleSource):
             if lang not in sub.get("href"):
                 continue
 
+            link_name = sub.find_all("span")[1].contents[0].strip()
+            link_pointer = Query.parse(link_name).pointer
+
+            if str(link_pointer) != str(query.pointer):
+                continue
+
             for span in sub.find_all("span"):
                 if sub.get("href") not in sub_links:
                     sub_links.append(sub.get("href"))
@@ -71,9 +78,12 @@ class SubScene(SubtitleSource):
             rating = ''
             rating_title = soup.find("span", class_="rating-bar")
 
-            for ch in rating_title['title']:
-                if ch.isdigit():
-                    rating += ch
+            if rating_title: 
+                for ch in rating_title['title']:
+                    if ch.isdigit():
+                        rating += ch
+            else:
+                rating = 4
 
             rating = (int(rating) / 10) * 0.75
             result = SubtitleResult("http://subscene.com" + dl_link, rating)
