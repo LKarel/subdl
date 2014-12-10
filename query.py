@@ -33,6 +33,10 @@ class Query:
         name = re.sub(r"\s+", " ", name)
         name = name.strip()
 
+        # It is a movie
+        if not pointer_str:
+            name = re.sub(r"^(.+\d{4}).*$", r"\1", name)
+
         query = Query(name)
         query.filename = filename
         query.imdb = Query._get_imdb_id(name)
