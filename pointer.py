@@ -8,6 +8,9 @@ class Pointer:
     def __str__(self):
         return "S%02iE%02i" % (self.season, self.episode)
 
+    def __eq__(self, other):
+        return self.season == other.season and self.episode == other.episode
+
     def parse(raw):
         regex = None
 
