@@ -77,7 +77,7 @@ class SubScene(SubtitleSource):
             rating = ''
             rating_title = soup.find("span", class_="rating-bar")
 
-            if rating_title: 
+            if rating_title:
                 for ch in rating_title["title"]:
                     if ch.isdigit():
                         rating += ch
