@@ -1,3 +1,4 @@
+import re
 from bs4 import BeautifulSoup
 from difflib import SequenceMatcher
 import http.client, urllib.parse
@@ -25,6 +26,14 @@ class SubScene(SubtitleSource):
                 continue
 
             return link.get("href")
+
+    def _extract_rating(self, input):
+        match = re.match(r".*(?P<rating>\d+)", input)
+
+        if match:
+            return int(match.group("rating"))
+
+        return 0
 
     def find(self, query, lang=None):
         lang = self._convert_lang(lang)
@@ -71,17 +80,13 @@ class SubScene(SubtitleSource):
             dl_button = soup.find(id="downloadButton")
             dl_link = dl_button.get("href")
 
-            rating = ''
+            rating = 0
             rating_title = soup.find("span", class_="rating-bar")
 
             if rating_title:
-                for ch in rating_title["title"]:
-                    if ch.isdigit():
-                        rating += ch
-            else:
-                rating = 0
+                rating = self._extract_rating(rating_title["title"])
 
-            score = (int(rating) / 10) * 0.15 + 0.6 * item["score"]
+            score = (rating / 10) * 0.15 + 0.6 * item["score"]
             result = SubtitleResult("http://subscene.com" + dl_link, score)
             result.target_name = item["filename"]
             result.zipped = True
