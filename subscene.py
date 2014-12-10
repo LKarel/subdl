@@ -30,10 +30,7 @@ class SubScene(SubtitleSource):
         lang = self._convert_lang(lang)
 
         if not query.filename:
-            search = query.name
-
-            if query.pointer:
-                search += " %s" % str(query.pointer)
+            search = str(query)
         else:
             search = query.filename
 
