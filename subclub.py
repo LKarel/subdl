@@ -23,8 +23,8 @@ class SubClub(SubtitleSource):
             "tp": "nimi"
         }
 
-        if query.imdb:
-            params["otsing"] = str(query.imdb)
+        if query.imdb():
+            params["otsing"] = query.imdb()
             params["tp"] = "kood"
         elif query.pointer:
             params["otsing"] += " %sx%s" % (query.pointer.season, query.pointer.episode)
