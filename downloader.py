@@ -14,7 +14,7 @@ class Downloader:
         results = []
 
         for source in self.sources:
-            results += source.find(query, count, lang)
+            results += source.find(query, lang=lang)
 
         results = sorted(results, key=lambda v: v.score, reverse=True)
 
@@ -42,8 +42,5 @@ class Downloader:
 
             if len(files) == count:
                 break
-
-        if len(files) >= count:
-            return files[:count]
 
         return files
