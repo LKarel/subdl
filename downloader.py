@@ -29,7 +29,11 @@ class Downloader:
             if result.zipped:
                 tmp = tempfile.TemporaryFile()
                 tmp.write(body)
-                z = zipfile.ZipFile(tmp)
+
+                try:
+                    z = zipfile.ZipFile(tmp)
+                except zipfile.BadZipFile:
+                    continue
 
                 names = z.namelist()
                 if len(names) == 0:
