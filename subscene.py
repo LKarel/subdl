@@ -22,10 +22,18 @@ class SubScene(SubtitleSource):
             if not link.string:
                 continue
 
-            if query.name not in link.string.lower():
+            score = SequenceMatcher(None, query.name, link.string.lower()).ratio()
+            if score < 0.7:
                 continue
 
-            return link.get("href")
+            sub_links.append({
+                "url": link.get("href"),
+                "score": score
+            })
+
+        sub_links = sorted(sub_links, key=lambda v: v["score"], reverse=True)
+
+        return sub_links[0]["url"]
 
     def _extract_rating(self, input):
         match = re.match(r".*(?P<rating>\d+)", input)
