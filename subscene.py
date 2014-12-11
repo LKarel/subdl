@@ -33,6 +33,9 @@ class SubScene(SubtitleSource):
 
         sub_links = sorted(sub_links, key=lambda v: v["score"], reverse=True)
 
+        if not sub_links:
+            return None
+
         return sub_links[0]["url"]
 
     def _extract_rating(self, input):
@@ -59,6 +62,9 @@ class SubScene(SubtitleSource):
         else:
             sub_links_page = "/subtitles/release?" + params
 
+        if not sub_links_page:
+            return []
+
         soup = util.connect("subscene.com", sub_links_page)
 
         sub_links = []
@@ -66,7 +72,11 @@ class SubScene(SubtitleSource):
             if lang not in sub.get("href"):
                 continue
 
-            link_name = sub.find_all("span")[1].contents[0].strip()
+            spans = sub.find_all("span")
+            if len(spans) <= 1 or not spans[0].contents:
+                continue
+
+            link_name = spans[1].contents[0].strip()
             link_query = Query.parse(link_name)
 
             if str(link_query.pointer) != str(query.pointer):
