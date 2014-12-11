@@ -45,7 +45,7 @@ class SubScene(SubtitleSource):
 
         params = urllib.parse.urlencode({"q": search})
 
-        if not query.pointer and not query.filename:
+        if not query.pointer and query.filename == query.name:
             soup = util.connect("subscene.com", "/subtitles/title?" + params)
             sub_links_page = self._find_movie_by_name(query, soup)
         else:
@@ -64,7 +64,7 @@ class SubScene(SubtitleSource):
             if str(link_query.pointer) != str(query.pointer):
                 continue
 
-            if link_query.name != query.name:
+            if SequenceMatcher(None, query.name, link_query.name).ratio() < 0.8:
                 continue
 
             sub_links.append({
