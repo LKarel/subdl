@@ -67,7 +67,7 @@ class SubScene(SubtitleSource):
             sub_links.append({
                 "filename": link_name + ".srt",
                 "url": sub.get("href"),
-                "score": SequenceMatcher(None, query.filename, link_name).ratio()
+                "score": SequenceMatcher(None, query.filename, link_name.lower()).ratio()
             })
 
         sub_links = sorted(sub_links, key=lambda v: v["score"], reverse=True)
