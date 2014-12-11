@@ -23,7 +23,7 @@ class SubScene(SubtitleSource):
                 continue
 
             score = SequenceMatcher(None, query.name, link.string.lower()).ratio()
-            if score < 0.7:
+            if score < 0.5:
                 continue
 
             sub_links.append({
