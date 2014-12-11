@@ -64,12 +64,11 @@ class SubScene(SubtitleSource):
             if str(link_pointer) != str(query.pointer):
                 continue
 
-            if sub.get("href") not in sub_links:
-                sub_links.append({
-                    "filename": link_name + ".srt",
-                    "url": sub.get("href"),
-                    "score": SequenceMatcher(None, query.filename, link_name).ratio()
-                })
+            sub_links.append({
+                "filename": link_name + ".srt",
+                "url": sub.get("href"),
+                "score": SequenceMatcher(None, query.filename, link_name).ratio()
+            })
 
         sub_links = sorted(sub_links, key=lambda v: v["score"], reverse=True)
         ret = []
