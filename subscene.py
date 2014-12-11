@@ -38,9 +38,9 @@ class SubScene(SubtitleSource):
     def find(self, query, lang=None):
         lang = self._convert_lang(lang)
 
-        if not query.filename:
-            search = str(query)
-        else:
+        search = str(query)
+
+        if query.filename and not query.pointer:
             search = query.filename
 
         params = urllib.parse.urlencode({"q": search})
