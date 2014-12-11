@@ -59,9 +59,12 @@ class SubScene(SubtitleSource):
                 continue
 
             link_name = sub.find_all("span")[1].contents[0].strip()
-            link_pointer = Query.parse(link_name).pointer
+            link_query = Query.parse(link_name)
 
-            if str(link_pointer) != str(query.pointer):
+            if str(link_query.pointer) != str(query.pointer):
+                continue
+
+            if link_query.name != query.name:
                 continue
 
             sub_links.append({
