@@ -27,11 +27,8 @@ class Application(tk.Tk):
         self.var = tk.StringVar(self)
         self.var.set(options[0])
 
-        self.dropdown = ttk.OptionMenu(self, self.var, options[0], *options, command= lambda: _save_lang(self.var.get()))
+        self.dropdown = ttk.OptionMenu(self, self.var, options[0], *options)
         self.dropdown.place(x=85, y=25)
-
-        self.save_button = ttk.Button(self, text=_lang("salvesta"), command= lambda: _save_lang(self.var.get()))
-        self.save_button.place(x=175, y=25)
 
         self.help = tk.Label(text=_lang("Kuidas seda persekukkunud programmi kasutada..."))
         self.help.place(x=15, y=75)
