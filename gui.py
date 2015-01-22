@@ -17,9 +17,6 @@ def _lang(key):
 def _save_lang(value): # Save the language
     pass
 
-def _search(target): # Movie/serial to search
-    print(target)
-
 class Application(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -38,13 +35,10 @@ class Application(tk.Tk):
         self.var.set(options[0])
 
         self.dropdown = ttk.OptionMenu(self, self.var, options[0], *options)
-        self.dropdown.place(x=85, y=25)
+        self.dropdown.place(x=200, y=25)
 
         self.help = tk.Label(text=_lang("usage"))
         self.help.place(x=15, y=75)
-
-        self.search = tk.Label(text=_lang("search_label"))
-        self.search.place(x=15, y=125)
 
         self.separator = ttk.Separator(self, orient=tk.HORIZONTAL)
         self.separator.place(x=15, y=240, width=396)
